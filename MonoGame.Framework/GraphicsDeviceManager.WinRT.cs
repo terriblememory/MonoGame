@@ -4,6 +4,7 @@
 
 using System;
 using Microsoft.Xna.Framework.Graphics;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml.Controls;
 
 namespace Microsoft.Xna.Framework
@@ -12,6 +13,16 @@ namespace Microsoft.Xna.Framework
     {
         [CLSCompliant(false)] 
         public SwapChainPanel SwapChainPanel { get; set; }
+
+        partial void PlatformApplyChanges()
+        {
+            var dinfo = Windows.Graphics.Display.DisplayInformation.GetForCurrentView();
+            var scale = dinfo.RawPixelsPerViewPixel;
+            var size = new Windows.Foundation.Size(_preferredBackBufferWidth / scale, _preferredBackBufferHeight / scale);
+            var appView = ApplicationView.GetForCurrentView();
+            var success = appView.TryResizeView(size);
+            System.Diagnostics.Debug.Assert(success, "TryResizeView failed");
+        }
 
         partial void PlatformPreparePresentationParameters(PresentationParameters presentationParameters)
         {
